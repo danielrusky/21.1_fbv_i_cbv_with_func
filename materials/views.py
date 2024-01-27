@@ -7,6 +7,18 @@ from pytils.translit import slugify
 from materials.models import Material
 
 
+class MaterialListView(ListView):
+    model = Material
+    extra_context = {
+        'title': 'Материалы',
+    }
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = queryset.filter(is_published=True)
+        return queryset
+
+
 class MaterialCreateView(CreateView):
     model = Material
     fields = ('title', 'body', 'image',)
@@ -19,18 +31,6 @@ class MaterialCreateView(CreateView):
             new_mat.save()
 
         return super().form_valid(form)
-
-
-class MaterialListView(ListView):
-    model = Material
-    extra_context = {
-        'title': 'Материалы',
-    }
-
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset(*args, **kwargs)
-        queryset = queryset.filter(is_published=True)
-        return queryset
 
 
 class MaterialDetailView(DetailView):
