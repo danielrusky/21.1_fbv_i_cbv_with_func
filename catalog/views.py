@@ -43,14 +43,6 @@ class ProductUpdateView(UpdateView):
     fields = ('name', 'description', 'price', 'image', 'category')
     success_url = reverse_lazy('catalog:list_product')
 
-    def form_valid(self, form):
-        formset = self.get_context_data()['formset']
-        self.object = form.save()
-        if formset.is_valid():
-            formset.instance = self.object
-            formset.save()
-        return super().form_valid(form)
-
 
 class ProductDetailView(DetailView):
     model = Product
@@ -122,6 +114,7 @@ class ContactsView(TemplateView):
     template_name = 'catalog/contacts.html'
     extra_context = {
         'title': 'Контакты',
+        'contacts': Contacts.objects.get(name='Данила'),
     }
 
     def post(self, request, *args, **kwargs):
@@ -131,5 +124,6 @@ class ContactsView(TemplateView):
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         message = request.POST.get('message')
+        Contacts.objects.create(name=name, phone=phone, message=message)
         print(f'name: {name}, phone: {phone}, message: {message}')
         return render(request, 'catalog/contacts.html', self.extra_context, {'contacts': Contacts.objects.get(pk=1)})
